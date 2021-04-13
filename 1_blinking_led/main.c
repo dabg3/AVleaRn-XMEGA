@@ -1,20 +1,18 @@
 #include <stdint.h>
 
-typedef uint8_t register8_t;
+struct io_port {
+	uint8_t dir;	
+	uint8_t dirset;	
+	uint8_t dirclr;	
+	uint8_t dirtgl;	
+	uint8_t out;	
+	uint8_t outset;	
+	uint8_t outclr;	
+	uint8_t outtgl;	
+};
 
-typedef struct PORT_struct {
-	register8_t DIR;	
-	register8_t DIRSET;	
-	register8_t DIRCLR;	
-	register8_t DIRTGL;	
-	register8_t OUT;	
-	register8_t OUTSET;	
-	register8_t OUTCLR;	
-	register8_t OUTTGL;	
-} port_t;
-
-#define PORTD (*(port_t *) 0x0660)
-#define PORTR (*(port_t *) 0x07E0)
+#define PORTD (*(struct io_port *) 0x0660)
+#define PORTR (*(struct io_port *) 0x07E0)
 
 #define PIN0_MASK 0x01
 #define PIN1_MASK 0x02
@@ -23,21 +21,21 @@ typedef struct PORT_struct {
 
 int main(void) {
 	
-	PORTR.DIR = PIN0_MASK | PIN1_MASK;
-	PORTD.DIR = PIN4_MASK;
-	PORTR.OUTSET = PIN1_MASK;
-	PORTD.OUTSET = PIN4_MASK;
+	PORTR.dir = PIN0_MASK | PIN1_MASK;
+	PORTD.dir = PIN4_MASK;
+	PORTR.outset = PIN1_MASK;
+	PORTD.outset = PIN4_MASK;
 
 	while(1) {
 		for(uint16_t i=0; i < 30000; i++){}
-		if (PORTR.OUT == PIN1_MASK) {
-			PORTR.OUTTGL = PIN0_MASK | PIN1_MASK;
-		} else if (PORTR.OUT == PIN0_MASK) {
-			PORTR.OUTTGL = PIN1_MASK;	
-			PORTD.OUTTGL = PIN4_MASK;
+		if (PORTR.out == PIN1_MASK) {
+			PORTR.outtgl = PIN0_MASK | PIN1_MASK;
+		} else if (PORTR.out == PIN0_MASK) {
+			PORTR.outtgl = PIN1_MASK;	
+			PORTD.outtgl = PIN4_MASK;
 		} else {
-			PORTD.OUTTGL = PIN4_MASK;
-			PORTR.OUTTGL = PIN0_MASK;
+			PORTD.outtgl = PIN4_MASK;
+			PORTR.outtgl = PIN0_MASK;
 		}
 	}
 
